@@ -31,7 +31,7 @@ library(EnhancedVolcano)
 # Set up directories
 
 ```{r}
-result.dir <- "2024_03_07_results"
+result.dir <- "2024_03_07_results/"
 
 if(!exists(result.dir)){
   dir.create(result.dir)
@@ -103,11 +103,23 @@ meta <- meta |>
          .after = Sample)
 ```
 
+Save updated metadata for future use
+
+```{r}
+write.csv(meta, file = paste0(result.dir, "2024_03_07_metadata.csv"))
+```
+
+
 ## Creating counts matrix
 
 ### Create and save/load gtf_df
 
 Import the mouse gtf file. We use this to convert the transcript IDs from the quant files to gene IDs for DESeq.
+
+```{r}
+options(future.globals.maxSize = 14000 * 1024^2)
+```
+
 
 ```{r}
 gtf <-  rtracklayer::import("data/Homo_sapiens.GRCh38.106.gtf")
@@ -247,12 +259,13 @@ Create DESeqDataSet() object
 subset.dds <- DESeqDataSet(subset.se, design = ~ condition)
 ```
 
+
 ### Run DESeq
 
 ```{r}
 subset.dds <-  DESeq(subset.dds)
 
-Create a results table of our comparison of interest
+# Create a results table of our comparison of interest
 subset.res <- results(subset.dds,
                         contrast = c("condition", "HOS_D1", "HOS_Media"),
                         alpha = 0.05)
@@ -401,6 +414,10 @@ save(subset.dds, subset.res, subset.topgo, sf.df.anno,
 
 ### Run GeneTonic
 
+```{r}
+load(file = paste0(genetonic.dir, "HOS_CAR_sup.vs.HOS_Media.Rdata"))
+```
+
 ```{r, eval=FALSE}
 GeneTonic(dds = subset.dds,
           res_de = subset.res,
@@ -424,7 +441,8 @@ deseq_and_genetonic <- function(condition1, condition2) {
   
   # Create a vector that has the samples we want to compare
   subset.vector <- meta |> 
-    dplyr::filter(condition == condition1 | condition == condition2) |> 
+    # dplyr::filter(condition == condition1 | condition == condition2) |> # use for condition comparisons
+    dplyr::filter(group == condition1 | group == condition2) |> # use for group comparisons
     pull(folder.name)
   
   # Subset the sf.df
@@ -448,20 +466,23 @@ deseq_and_genetonic <- function(condition1, condition2) {
   
   # Create a dataframe of subset samples and their condition, need to created SE object
   subset.coldata <- data.frame(sample = subset.meta$folder.name,
-                        condition = as.factor(subset.meta$condition),
+                        # condition = as.factor(subset.meta$condition), # condition comparison
+                        group = as.factor(subset.meta$group), # group comparison
                         row.names = "sample")
   # Create SE object
   subset.se <- SummarizedExperiment(assays = list(counts = subset.matrix),
                              colData = subset.coldata)
   
   # Create DDS object
-  subset.dds = DESeqDataSet(subset.se, design = ~ condition)
+  # subset.dds <-  DESeqDataSet(subset.se, design = ~ condition) # condition comparison
+  subset.dds <- DESeqDataSet(subset.se, design = ~ group) # group comparison
   
   # DESeq and results looking at our subsetted samples
   subset.dds = DESeq(subset.dds)
   
   subset.res <- results(subset.dds,
-                          contrast = c("condition", condition1, condition2),
+                          # contrast = c("condition", condition1, condition2), # condition comparison
+                          contrast = c("group", condition1, condition2), # group comparison
                           alpha = 0.05)
   
   # Create annotated results, join it to raw counts, and filter out NA genes
@@ -500,8 +521,8 @@ deseq_and_genetonic <- function(condition1, condition2) {
                            keytype = "ENSEMBL", 
                            column = "SYMBOL", 
                            multiVals = "first")) |> 
-    # dplyr::filter(padj < 0.00000000000000001) |> # for donor vs media comparisons
-    dplyr::filter(padj < 0.05) |> # for donor vs donor comparisons
+    dplyr::filter(padj < 0.00000000000000001) |> # for donor vs media comparisons and group comparison
+    # dplyr::filter(padj < 0.05) |> # for donor vs donor comparisons
     pull(Symbol)
   
   ## Background gene symbols
@@ -555,7 +576,7 @@ condition2 = c("HOS_Media", "HOS_Media", "OS_17_Media", "OS_17_Media", "OS_17_Me
 map2(condition1, condition2, deseq_and_genetonic)
 ```
 
-We know there can be significant variation in activity between donor T cells, so let's also compare the donor conditions to each other. The difference will not be as great as comparing donors vs control, so I will reset the function using a p value of 0.05 for the pathway analysis.
+We know there can be significant variation in activity between donor T cells, so let's also compare the donor conditions to each other. The difference will not be as great as comparing donors vs control, so I will reset the function using a p value of 0.05 for the pathway analysis. Look for commented lines in the function.
 
 ```{r}
 condition3 = c("HOS_D1", "HOS_D1", "HOS_D2", "OS_17_D1", "OS_17_D1", "OS_17_D2")
@@ -567,296 +588,20 @@ condition4 = c("HOS_D2", "HOS_D3", "HOS_D3", "OS_17_D2", "OS_17_D3", "OS_17_D3")
 map2(condition3, condition4, deseq_and_genetonic)
 ```
 
-
-
-Next: making plots using my DESeq and GeneTonic objects.
-
-# ---------------------------------------------------------
-
-# Generating heatmaps, volcano plots, and GeneTonic plots
-
-## Single comparison walk through
-
-Now that we have our DESeq data and GeneTonic object data, I made some plots for each comparison:
-
--   Heatmap of top 25 DE genes by adjusted p value
-
--   Heatmap of top 25 DE genes by absolute log2FC
-
--   Volcano plot
-
--   GeneTonic Gene set enrichment plot (The call it "Summary Overview")
-
-I could have created a folder for heatmaps, one for volcano plots, etc...
-
-But that is hard to navigate, with 14 similar plots side by side. I thought it would be better for each comparison to have its own folder that contains 4 plots. We will let the function make folders as it generates the plots.
-
-We will need to read in the data, generated by our earlier function, for the plots.
+I also want to combine each of the donors (for each tumor cell line) and compare them against their respective media control. This will be done using the `group` column created earlier. Again I have to alter the function for this. Look for commented lines mentioning group comparisons.
 
 ```{r}
-load(file = paste0("2024_01_10_results/genetonic_results/Mixed.CD4.B.vs.Reject.CD4.B.Rdata"))
+condition5 <- c("HOS_CAR_sup", "OS_17_CAR_sup")
 
-deseq.df <- read.csv(file = paste0("2024_01_10_results/deseq_results/Mixed.CD4.B.vs.Reject.CD4.B.csv"))
-```
-
-New results folder, which will contain the subfolders for each comparison.
-
-```{r}
-folder.name <- "2024_01_19_results"
-
-if(!exists(folder.name)){
-    dir.create(folder.name)
-  }
-```
-
-### Heatmap generation
-
-The sample names in the counts matrix are typically displayed under each column of a heatmap. But they made the plot harder to interpret, so I did not plot them and used an annotation dataframe instead.
-
-Another sticking point: My DESeq results have the subset counts for my heatmaps, but there is no consistent naming structure. Our samples all have `L002`, but the public data do not. Some comparisons have 6 samples, others only 4 or 5.
-
-The best way to isolate the counts was to remove the common rows they all share: the DESeq results at the front of the dataframe, with `dplyr::select(deseq.df, -1:-10)` in this example case.
-
-```{r}
-# This removes all the columns that are not raw counts from the DESeq results
-sample.df <- dplyr::select(deseq.df, -1:-10)
-
-# Filter metadata for one of the condition comparisons
-subset1 <- meta |> 
-  filter(condition == "Mixed.CD4.B") |> 
-  pull(folder.name)
-
-# We need to do some renaming to match folder.name format to the column names in the raw counts data 
-## change - to .
-subset1 <- subset1 |> 
-  str_replace_all("-", ".")
-
-## R adds X to all column names that start with a number, so we need to add X as well
-subset1 <- paste0("X", subset1)
-
-# Create the annotation dataframe where the column name is matched with its condition
-anno <- data.frame(sample_name = colnames(sample.df)) |> 
-  mutate(condition = ifelse(sample_name %in% subset1, "Mixed.CD4.B", "Reject.CD4.B")) |> 
-  column_to_rownames("sample_name")
-
-# defining colors for the annotation
-condition <- c("orange", "blue")
-names(condition) <- c("Mixed.CD4.B", "Reject.CD4.B")
-anno_colors <- list(condition = condition)
+condition6 <- c("HOS_Media", "OS_17_Media")
 ```
 
 ```{r}
-# Take a look at our annotation dataframes
-anno
-anno_colors
+map2(condition5, condition6, deseq_and_genetonic)
 ```
 
-### Create and save heatmaps
 
-Heatmap for the top 25 padj:
-
-```{r}
-deseq.df |> 
-  #results are sorted by padj by default, so I started by taking the top 25 rows
-  dplyr::slice(1:25) |> 
-  column_to_rownames(var = "gene_symbol") |>
-  # The previous line removes one of the 10 common columns, only need to remove the front 9 columns now
-  dplyr::select(-1:-9) |> 
-  pheatmap(scale = "row",
-         fontsize = 12,
-         fontsize_row = 11,
-         show_colnames = FALSE,
-         treeheight_col = 0,
-         annotation = anno,
-         annotation_colors = anno_colors,
-         main = "Top 25 genes by p-value") |> 
-         ggsave(filename = "2024_01_19_results/Mixed.CD4.B.VS.Reject.CD4.B/Mixed.CD4.B.VS.Reject.CD4.B.padj.png")
-```
-
-For (absolute) log2FC:
-
-```{r}
-deseq.df |> 
-  filter(padj <= 0.05) |> 
-  arrange(desc(abs(log2FoldChange))) |> 
-  dplyr::slice(1:25) |> 
-  column_to_rownames(var = "gene_symbol") |> 
-  # The previous line removes one of the 10 common columns, only need to remove the front 9 columns now
-  dplyr::select(-1:-9) |>
-  pheatmap(scale = "row",
-         fontsize = 12,
-         fontsize_row = 11,
-         show_colnames = FALSE,
-         treeheight_col = 0,
-         annotation = anno,
-         annotation_colors = anno_colors,
-         main = "Top 25 genes by absolute log2FC") |> 
-         ggsave(filename = "2024_01_19_results/Mixed.CD4.B.VS.Reject.CD4.B/Mixed.CD4.B.VS.Reject.CD4.B.log2FC.png")
-```
-
-## Volcano plot of DE genes
-
-```{r}
-volc.plot <- EnhancedVolcano(toptable = deseq.df,
-                lab = deseq.df$gene_symbol,
-                x = "log2FoldChange",
-                y = "padj",
-                # keeping the lines below commented out for future formatting
-                # xlim = c(-3, 3),
-                # ylim = c(-0.5, 8),
-                # FCcutoff = ,
-                title = "Mixed.CD4.B vs Reject.CD4.B",
-                subtitle = "DESeq2 Results",
-                pCutoff = 0.05,
-                legendPosition = "none",
-                caption = "") 
-
-volc.plot |> 
-  ggsave(filename = "2024_01_19_results/Mixed.CD4.B.vs.Reject.CD4.B/Mixed.CD4.B.VS.Reject.CD4.B.volcano.png")
-
-# I only defined volc.plot to show the plot for presentation purposes
-# you could pipe EnhancedVolcano() directly into ggsave
-volc.plot
-```
-
-## GeneTonic Gene Set Enrichment - summary plot
-
-```{r}
-p <- gs_summary_overview(res_enrich = subset.topgo,
-                    n_gs = 15) +
-  labs(title = "Gene Set Enrichment",
-       subtitle = "Mixed.CD4.B vs Reject.CD4.B") 
-
-# This one I could not pipe directly into ggsave, so it gets a temporary value
-ggsave(filename = "2024_01_19_results/Mixed.CD4.B.VS.Reject.CD4.B/Mixed.CD4.B.vs.Reject.CD4.B.summary.png",
-       plot = p,
-       width = 11,
-       height = 8,
-       units = "in",
-       bg = "white")
-
-p
-```
-
-# Plot function
-
-Now that I generated each of our plots, I created the function to generate the rest. It's similar to the DESeq function, with condition1 and condition2 as inputs.
-
-```{r}
-plot_results <- function(condition1, condition2){
-  # load in data
-  load(file = paste0("2024_01_10_results/genetonic_results/", condition1, ".vs.", condition2, ".Rdata"))
-  deseq.df <- read.csv(file = paste0("2024_01_10_results/deseq_results/", condition1, ".vs.", condition2, ".csv")) 
-  
-  # Create a result folder for the dataset
-  results.folder <- paste0(folder.name, "/", condition1, ".vs.", condition2, "/")
-  
-  if(!exists(results.folder)){
-    dir.create(results.folder)}
-  
-  # filter the deseq.df so we can pull out the colnames for the annotation df
-  sample.df <- dplyr::select(deseq.df, -1:-10)
-  
-  # Filter metadata for one of the condition comparisons
-  subset1 <- meta |> 
-    filter(condition == condition1) |> 
-    pull(folder.name)
-  # change - to . to match column name format
-  subset1 <- subset1 |> 
-    str_replace_all("-", ".")
-  # R adds X to all column names that start with a number, so we need to add X as well
-  subset1 <- paste0("X", subset1)
-  # Create the annotation dataframe where the column name is matched with its condition
-  anno <- data.frame(sample_name = colnames(sample.df)) |> 
-    mutate(condition = ifelse(sample_name %in% subset1, condition1, condition2)) |> 
-    column_to_rownames("sample_name")
-  
-  # defining colors for the annotation
-  condition <- c("orange", "blue")
-  names(condition) <- c(condition1, condition2)
-  anno_colors <- list(condition = condition)
-  
-  # Top 25 DE by padj heatmap
-  deseq.df |> 
-    dplyr::slice(1:25) |> 
-    column_to_rownames(var = "gene_symbol") |> 
-    dplyr::select(-1:-9) |> 
-    pheatmap(scale = "row",
-           fontsize = 12,
-           fontsize_row = 11,
-           show_colnames = FALSE,
-           treeheight_col = 0,
-           annotation = anno,
-           annotation_colors = anno_colors,
-           main = "Top 25 genes by p-value") |> 
-           ggsave(filename = paste0(results.folder, condition1, ".vs.", condition2, ".padj.png"))
-  
-  # log2FC heatmap
-  deseq.df |> 
-    filter(padj <= 0.05) |> 
-    arrange(desc(abs(log2FoldChange))) |> 
-    dplyr::slice(1:25) |> 
-    column_to_rownames(var = "gene_symbol") |> 
-    dplyr::select(-1:-9) |> 
-    pheatmap(scale = "row",
-           fontsize = 12,
-           fontsize_row = 11,
-           show_colnames = FALSE,
-           treeheight_col = 0,
-           annotation = anno,
-           annotation_colors = anno_colors,
-           main = "Top 25 genes by absolute log2FC") |> 
-           ggsave(filename = paste0(results.folder, condition1, ".vs.", condition2, ".log2FC.png"))
-  
-  # Volcano plot
-  EnhancedVolcano(toptable = deseq.df,
-                  lab = deseq.df$gene_symbol,
-                  x = "log2FoldChange",
-                  y = "padj",
-                  # keeping the lines below commented out for future formatting
-                  # xlim = c(-3, 3),
-                  # ylim = c(-0.5, 8),
-                  # FCcutoff = ,
-                  title = paste(condition1, "vs", condition2, sep = " "),
-                  subtitle = "DESeq2 Results",
-                  pCutoff = 0.05,
-                  legendPosition = "none",
-                  caption = "") |> 
-    ggsave(filename = paste0(results.folder, condition1, ".vs.", condition2, ".volcano.png"))
-  
-  # Enriched gene set summary plot
-  p <- gs_summary_overview(res_enrich = subset.topgo, n_gs = 15) +
-    labs(title = "Gene Set Enrichment",
-         subtitle = paste(condition1, "vs", condition2, sep = " "))
-  
-  ggsave(filename = paste0(results.folder, condition1, ".vs.", condition2, ".pathways.png"),
-         plot = p,
-         width = 11,
-         height = 8,
-         units = "in",
-         bg = "white")
-}
-```
-
-## Inputs for function
-
-Now we can create our vectors/lists for the function input.
-
-```{r}
-condition1 = c("Mixed.CD4.B", "Mixed.CD4.B", "Mixed.CD4.B", "Mixed.CD8.B", "Mixed.CD8.B", "Mixed.CD8.B", "Auto.CD4.B", "Auto.CD4.B", "Auto.CD8.B", "Auto.CD8.B", "Mixed.CD4.D", "Mixed.CD8.D", "Reject.CD4.B", "Reject.CD8.B")
-
-condition2 = c("Reject.CD4.B", "Auto.CD4.B", "WT.CD4.B", "Reject.CD8.B", "Auto.CD8.B", "WT.CD8.B", "Reject.CD4.B", "WT.CD4.B", "Reject.CD8.B", "WT.CD8.B", "Auto.CD4.D", "Auto.CD8.D", "WT.CD4.B", "WT.CD8.B")
-```
-
-## Run the function
-
-map2() verison
-
-```{r, eval=FALSE}
-map2(condition1, condition2, plot_results)
-```
-
-Finished!
+End
 
 ```{r}
 sessionInfo()
