@@ -102,8 +102,7 @@ deseq.df |>
          annotation = anno,
          annotation_colors = anno_colors,
          main = "Top 25 genes by p-value")
-
-         # ggsave(filename = "2024_01_19_results/Mixed.CD4.B.VS.Reject.CD4.B/Mixed.CD4.B.VS.Reject.CD4.B.padj.png")
+         # ggsave(filename = "")
 ```
 
 For (absolute) log2FC:
@@ -124,8 +123,7 @@ deseq.df |>
          annotation = anno,
          annotation_colors = anno_colors,
          main = "Top 25 genes by absolute log2FC")
-
-         # ggsave(filename = "2024_01_19_results/Mixed.CD4.B.VS.Reject.CD4.B/Mixed.CD4.B.VS.Reject.CD4.B.log2FC.png")
+         # ggsave(filename = "")
 ```
 
 ## Volcano plot of DE genes
@@ -146,10 +144,11 @@ volc.plot <- EnhancedVolcano(toptable = deseq.df,
                 caption = "") 
 
 # volc.plot |> 
-#   ggsave(filename = "2024_01_19_results/Mixed.CD4.B.vs.Reject.CD4.B/Mixed.CD4.B.VS.Reject.CD4.B.volcano.png")
+#   ggsave(filename = "")
 
 # I only defined volc.plot to show the plot for presentation purposes
 # you could pipe EnhancedVolcano() directly into ggsave
+
 volc.plot
 ```
 
@@ -159,15 +158,15 @@ volc.plot
 p <- gs_summary_overview(res_enrich = subset.topgo,
                     n_gs = 15) +
   labs(title = "Gene Set Enrichment",
-       subtitle = "Mixed.CD4.B vs Reject.CD4.B") 
+       subtitle = "HOS_CAR_sup vs HOS_Media") 
 
 # This one I could not pipe directly into ggsave, so it gets a temporary value
-ggsave(filename = "2024_01_19_results/Mixed.CD4.B.VS.Reject.CD4.B/Mixed.CD4.B.vs.Reject.CD4.B.summary.png",
-       plot = p,
-       width = 11,
-       height = 8,
-       units = "in",
-       bg = "white")
+# ggsave(filename = "",
+#        plot = p,
+#        width = 11,
+#        height = 8,
+#        units = "in",
+#        bg = "white")
 
 p
 ```
@@ -179,11 +178,11 @@ Now that I generated each of our plots, I created the function to generate the r
 ```{r}
 plot_results <- function(condition1, condition2){
   # load in data
-  load(file = paste0("2024_01_10_results/genetonic_results/", condition1, ".vs.", condition2, ".Rdata"))
-  deseq.df <- read.csv(file = paste0("2024_01_10_results/deseq_results/", condition1, ".vs.", condition2, ".csv")) 
+  load(file = paste0("2024_03_07_results/genetonic_results/", condition1, ".vs.", condition2, ".Rdata"))
+  deseq.df <- read.csv(file = paste0("2024_03_07_results/deseq_results/", condition1, ".vs.", condition2, ".csv")) 
   
   # Create a result folder for the dataset
-  results.folder <- paste0(folder.name, "/", condition1, ".vs.", condition2, "/")
+  results.folder <- paste0(result.dir, condition1, ".vs.", condition2, "/")
   
   if(!exists(results.folder)){
     dir.create(results.folder)}
@@ -195,20 +194,19 @@ plot_results <- function(condition1, condition2){
   subset1 <- meta |> 
     filter(condition == condition1) |> 
     pull(folder.name)
-  # change - to . to match column name format
-  subset1 <- subset1 |> 
-    str_replace_all("-", ".")
-  # R adds X to all column names that start with a number, so we need to add X as well
-  subset1 <- paste0("X", subset1)
+
   # Create the annotation dataframe where the column name is matched with its condition
   anno <- data.frame(sample_name = colnames(sample.df)) |> 
-    mutate(condition = ifelse(sample_name %in% subset1, condition1, condition2)) |> 
+    # mutate(condition = ifelse(sample_name %in% subset1, condition1, condition2)) |>
+    mutate(group = ifelse(sample_name %in% subset1, condition1, condition2)) |>
     column_to_rownames("sample_name")
   
   # defining colors for the annotation
   condition <- c("orange", "blue")
   names(condition) <- c(condition1, condition2)
-  anno_colors <- list(condition = condition)
+  # anno_colors <- list(condition = condition)
+  anno_colors <- list(group = condition)
+  
   
   # Top 25 DE by padj heatmap
   deseq.df |> 
@@ -272,24 +270,33 @@ plot_results <- function(condition1, condition2){
 }
 ```
 
-## Inputs for function
+## Run function: condition plots
 
 Now we can create our vectors/lists for the function input.
 
 ```{r}
-condition1 = c()
+condition1 = c("HOS_D1", "HOS_D2", "HOS_D3", "OS_17_D1", "OS_17_D2", "OS_17_D3", "HOS_D1", "HOS_D1", "HOS_D2", "OS_17_D1", "OS_17_D1", "OS_17_D2")
 
-condition2 = c()
+condition2 = c("HOS_Media", "HOS_Media", "HOS_Media", "OS_17_Media", "OS_17_Media", "OS_17_Media", "HOS_D2", "HOS_D3", "HOS_D3", "OS_17_D2", "OS_17_D3", "OS_17_D3")
 ```
-
-## Run the function
-
-map2() verison
 
 ```{r, eval=FALSE}
 map2(condition1, condition2, plot_results)
 ```
 
+## Run function: group plots
+
+Go back to the function and comment in/out the group variable in the annotation dataframes.
+
+```{r}
+condition3 <- c("HOS_CAR_sup", "OS_17_CAR_sup")
+
+condition4 <- c("HOS_Media", "OS_17_Media")
+```
+
+```{r, eval=FALSE}
+map2(condition3, condition4, plot_results)
+```
 Finished!
 
 ```{r}
