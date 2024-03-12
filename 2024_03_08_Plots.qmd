@@ -155,18 +155,10 @@ volc.plot
 ## GeneTonic Gene Set Enrichment - summary plot
 
 ```{r}
-p <- gs_summary_overview(res_enrich = subset.topgo,
+gs_summary_overview(res_enrich = subset.topgo,
                     n_gs = 15) +
   labs(title = "Gene Set Enrichment",
        subtitle = "HOS_CAR_sup vs HOS_Media") 
-
-# This one I could not pipe directly into ggsave, so it gets a temporary value
-# ggsave(filename = "",
-#        plot = p,
-#        width = 11,
-#        height = 8,
-#        units = "in",
-#        bg = "white")
 
 p
 ```
@@ -204,7 +196,7 @@ plot_results <- function(condition1, condition2){
   # defining colors for the annotation
   condition <- c("orange", "blue")
   names(condition) <- c(condition1, condition2)
-  # anno_colors <- list(condition = condition)
+  # condition4anno_colors <- list(condition = condition)
   anno_colors <- list(group = condition)
   
   
@@ -297,7 +289,39 @@ condition4 <- c("HOS_Media", "OS_17_Media")
 ```{r, eval=FALSE}
 map2(condition3, condition4, plot_results)
 ```
-Finished!
+
+# Special request : top 100 genes for both cell lines
+
+Emailed results out on 3-11-24. Mike and Haruko want to know the top 100 shared genes between the group comparisons (HOS_CAR_sup vs HOS_Media and OS_17_CAR_sup vs OS_17_Media).
+
+Read in the data
+
+```{r}
+hos_deseq <- read.csv(file = "2024_03_07_results/deseq_results/HOS_CAR_sup.vs.HOS_Media.csv")
+os_deseq <- read.csv(file = "2024_03_07_results/deseq_results/OS_17_CAR_sup.vs.OS_17_Media.csv")
+```
+
+
+
+```{r}
+os_deseq <- os_deseq |> 
+  rename(os17_padj = padj,
+         os17_log2FC = log2FoldChange) |> 
+  select(gene_id, os17_log2FC, os17_padj)
+
+combined_df <- hos_deseq |> 
+  rename(hos_padj = padj,
+         hos_log2FC = log2FoldChange) |> 
+  select(gene_id, gene_symbol, gene_entrez, gene_desc, hos_log2FC, hos_padj) |> 
+  left_join(os_deseq, by = "gene_id") |> 
+  na.omit() |> 
+  filter((os17_log2FC > 0 & hos_log2FC > 0) | (os17_log2FC < 0 & hos_log2FC < 0),
+         os17_padj < 0.05 & hos_padj < 0.05)
+
+write.csv(combined_df, file = paste0(result.dir, "HOS_OS17_shared_DE_genes.csv"))
+
+```
+
 
 ```{r}
 sessionInfo()
