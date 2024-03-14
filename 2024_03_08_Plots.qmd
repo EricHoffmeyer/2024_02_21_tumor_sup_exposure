@@ -301,7 +301,7 @@ hos_deseq <- read.csv(file = "2024_03_07_results/deseq_results/HOS_CAR_sup.vs.HO
 os_deseq <- read.csv(file = "2024_03_07_results/deseq_results/OS_17_CAR_sup.vs.OS_17_Media.csv")
 ```
 
-
+Wrangle the dataframes to merge into a single df containing gene info and padj/log2FC for each cell line.
 
 ```{r}
 os_deseq <- os_deseq |> 
