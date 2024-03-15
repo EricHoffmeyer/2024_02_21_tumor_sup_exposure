@@ -1,0 +1,59 @@
+---
+title: "2024_03_15_gprofiler_gene_sets"
+format: html
+editor: source
+---
+
+# Libraries
+
+```{r}
+suppressPackageStartupMessages({
+library(tidyverse)
+library(pcaExplorer)
+library(plotly)
+library(gprofiler2)
+library(GeneTonic)
+library(pheatmap)
+library(EnhancedVolcano)
+})
+```
+
+# Set up directories
+
+```{r}
+result.dir <- "2024_03_15_results/"
+
+if(!exists(result.dir)){
+  dir.create(result.dir)
+}
+```
+
+# Read in data
+
+```{r}
+gene.vector <- read.csv(file.path('2024_03_08_results/HOS_OS17_shared_DE_genes.csv')) %>% 
+  dplyr::filter(hos_padj < 0.000001 & os17_padj <0.000001) %>%
+  dplyr::select(gene_symbol) %>%
+  as.vector()
+
+temp <- gene.vector$gene_symbol
+```
+
+
+Gene set enrichment
+
+```{r}
+enrich <- gost(temp,
+                                organism = "hsapiens",
+                                ordered_query = T,
+                                evcodes = T,
+                                custom_bg = NULL,
+                                sources = c("GO", "KEGG", "REAC")
+)
+```
+
+
+```{r}
+
+```
+
