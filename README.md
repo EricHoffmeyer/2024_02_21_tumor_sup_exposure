@@ -9,3 +9,7 @@ This folder contains the results from 2024_03_07_DESeq.qmd, where each condition
 ## 2024_03_08_Plots_results
 
 Contains plots generated from the DESeq comparisons and .Rdata GeneTonic objects: two heatmaps, a volcano plot, and a summary plot for gene set enrichment.
+
+## 2024_03_15_gprofiler_gene_sets
+
+Contins results from expanded gene set analysis using the gprofiler package.
