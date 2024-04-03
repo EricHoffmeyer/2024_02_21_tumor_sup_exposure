@@ -1,0 +1,82 @@
+Antibody,Brand name,Company,Approval date,Route,Type,Target,Indication
+abciximab,ReoPro,Centocor,12/22/1994,intravenous,chimeric Fab,GPIIb/IIIa,Percutaneous coronary intervention
+adalimumab,Humira,Abbvie,12/31/2002,subcutaneous,fully human,TNF,Rheumatoid arthritis
+adalimumab-atto,Amjevita,Amgen,9/23/2016,subcutaneous,"fully human, biosimilar",TNF,Rheumatoid arthritis
+ado-trastuzumab emtansine,Kadcyla,Genentech,2/22/2013,intravenous,"humanized, antibody-drug conjugate",HER2,Metastatic breast cancer
+alemtuzumab,"Campath, Lemtrada",Genzyme,5/7/2001,intravenous,humanized,CD52,B-cell chronic lymphocytic leukemia
+alirocumab,Praluent,Sanofi Aventis,7/24/2015,subcutaneous,fully human,PCSK9,Heterozygous familial hypercholesterolemia
+atezolizumab,Tecentriq,Genentech,5/18/2016,intravenous,humanized,PD-L1,Urothelial carcinoma
+atezolizumab,Tecentriq,Genentech,10/18/2016,intravenous,humanized,PD-L1,Urothelial carcinoma
+avelumab,Bavencio,EMD Serono,3/23/2017,intravenous,fully human,PD-L1,Metastatic Merkel cell carcinoma
+basiliximab,Simulect,Novartis,5/12/1998,intravenous,chimeric,IL2RA,Prophylaxis of acute organ rejection in renal transplant
+belimumab,Benlysta,Human Genome Sciences,3/9/2011,intravenous,fully human,BLyS,Systemic lupus erythematosus
+bevacizumab,Avastin,Genentech,2/26/2004,intravenous,humanized,VEGF,Metastatic colorectal cancer
+bezlotoxumab,Zinplava,Merck,10/21/2016,intravenous,fully human,Clostridium difficile toxin B,Prevent recurrence of Clostridium difficile infection
+blinatumomab,Blincyto,Amgen,12/3/2014,intravenous,"mouse, bispecific",CD19,Precursor B-cell acute lymphoblastic leukemia
+brentuximab vedotin,Adcetris,Seattle Genetics,9/19/2011,intravenous,"chimeric, antibody-drug conjugate",CD30,Hodgkin lymphoma
+brodalumab,Siliq,Valeant,2/15/2017,subcutaneous,chimeric,IL17RA,Plaque psoriasis
+canakinumab,Ilaris,Novartis,6/17/2009,subcutaneous,fully human,IL1B,Cryopyrin-associated periodic syndrome
+capromab pendetide,ProstaScint,Cytogen,10/28/1996,intravenous,"murine, radiolabeled",PSMA,Diagnostic imaging agent in newly diagnosed prostate cancer or post-prostatectomy
+certolizumab pegol,Cimzia,UCB (company),4/22/2008,subcutaneous,humanized,TNF,Crohn's disease
+cetuximab,Erbitux,ImClone Systems,2/12/2004,intravenous,chimeric,EGFR,Metastatic colorectal carcinoma
+daclizumab,Zenapax,Roche,12/10/1997,intravenous,humanized,IL2RA,Prophylaxis of acute organ rejection in renal transplant
+daclizumab,Zinbryta,Biogen,5/27/2016,subcutaneous,humanized,IL2R,Multiple sclerosis
+daratumumab,Darzalex,Janssen Biotech,11/16/2015,intravenous,fully human,CD38,Multiple myeloma
+denosumab,"Prolia, Xgeva",Amgen,6/1/2010,subcutaneous,fully human,RANKL,Postmenopausal women with osteoporosis
+dinutuximab,Unituxin,United Therapeutics,3/10/2015,intravenous,chimeric,GD2,Pediatric high-risk neuroblastoma
+dupilumab,Dupixent,Regeneron Pharmaceuticals,3/28/2017,subcutaneous,fully human,IL4RA,"Atopic dermatitis, asthma"
+durvalumab,Imfinzi,AstraZeneca,5/1/2017,intravenous,fully human,PD-L1,Urothelial carcinoma
+eculizumab,Soliris,Alexion,3/16/2007,intravenous,humanized,Complement component 5,Paroxysmal nocturnal hemoglobinuria
+elotuzumab,Empliciti,Bristol-Myers Squibb,11/30/2015,intravenous,humanized,SLAMF7,Multiple myeloma
+evolocumab,Repatha,Amgen,8/27/2015,subcutaneous,fully human,PCSK9,Heterozygous familial hypercholesterolemia
+golimumab,Simponi,Centocor,4/24/2009,subcutaneous,fully human,TNF,Rheumatoid arthritis
+golimumab,Simponi Aria,Janssen Biotech,7/18/2013,intravenous,fully human,TNF,Rheumatoid arthritis
+ibritumomab tiuxetan,Zevalin,Spectrum Pharmaceuticals,2/19/2002,intravenous,"murine, radioimmunotherapy",CD20,"Relapsed or refractory low-grade, follicular, or transformed B-cell non-Hodgkin's lymphoma"
+idarucizumab,Praxbind,Boehringer Ingelheim,10/16/2015,intravenous,humanized Fab,dabigatran,Emergency reversal of anticoagulant dabigatran
+infliximab,Remicade,Centocor,8/24/1998,intravenous,chimeric,TNF alpha,Crohn's disease
+infliximab-abda,Renflexis,Samsung Bioepis,4/21/2017,intravenous,"chimeric, biosimilar",TNF,Crohn's disease
+infliximab-dyyb,Inflectra,Celltrion Healthcare,4/5/2016,intravenous,"chimeric, biosimilar",TNF,Crohn's disease
+ipilimumab,Yervoy,Bristol-Myers Squibb,3/25/2011,intravenous,fully human,CTLA-4,Metastatic melanoma
+ixekizumab,Taltz,Eli Lilly,3/22/2016,subcutaneous,humanized,IL17A,Plaque psoriasis
+mepolizumab,Nucala,GlaxoSmithKline,11/4/2015,subcutaneous,humanized,IL5,Severe asthma
+natalizumab,Tysabri,Biogen Idec,11/23/2004,intravenous,humanized,alpha-4 integrin,Multiple sclerosis
+necitumumab,Portrazza,Eli Lilly,11/24/2015,intravenous,fully human,EGFR,Metastatic squamous non-small cell lung carcinoma
+nivolumab,Opdivo,Bristol-Myers Squibb,12/22/2014,intravenous,fully human,PD-1,Metastatic melanoma
+nivolumab,Opdivo,Bristol-Myers Squibb,3/4/2015,intravenous,fully human,PD-1,Metastatic squamous non-small cell lung carcinoma
+obiltoxaximab,Anthem,Elusys Therapeutics,3/18/2016,intravenous,chimeric,Protective antigen of the Anthrax toxin,Inhalational anthrax
+obinutuzumab,Gazyva,Genentech,11/1/2013,intravenous,humanized,CD20,Chronic lymphocytic leukemia
+ocrelizumab,Ocrevus,Genentech,3/28/2017,intravenous,humanized,CD20,Multiple sclerosis
+ofatumumab,Arzerra,Glaxo Grp,10/26/2009,intravenous,fully human,CD20,Chronic lymphocytic leukemia
+olaratumab,Lartruvo,Eli Lilly,10/19/2016,intravenous,fully human,PDGFRA,Soft tissue sarcoma
+omalizumab,Xolair,Genentech,6/20/2003,subcutaneous,humanized,IgE,Moderate to severe persistent asthma
+palivizumab,Synagis,MedImmune,6/19/1998,intramuscular,humanized,F protein of RSV,Respiratory syncytial virus
+panitumumab,Vectibix,Amgen,9/27/2006,intravenous,fully human,EGFR,Metastatic colorectal cancer
+pembrolizumab,Keytruda,Merck,9/4/2014,intravenous,humanized,PD-1,Metastatic melanoma
+pertuzumab,Perjeta,Genentech,6/8/2012,intravenous,humanized,HER2,Metastatic breast cancer
+ramucirumab,Cyramza,Eli Lilly,4/21/2014,intravenous,fully human,VEGFR2,Gastric cancer
+ranibizumab,Lucentis,Genentech,6/30/2006,intravitreal injection,humanized,VEGFR1 VEGFR2,
+raxibacumab,Raxibacumab,Human Genome Sciences,12/24/2012,intravenous,fully human,Protective antigen of Bacillus anthracis,Inhalational anthrax
+reslizumab,Cinqair,Teva,3/23/2016,intravenous,humanized,IL5,Severe asthma
+rituximab,Rituxan,Genentech,11/26/1997,intravenous,chimeric,CD20,B-cell non-Hodgkin's lymphoma
+secukinumab,Cosentyx,Novartis,1/21/2015,subcutaneous,fully human,IL17A,Plaque psoriasis
+siltuximab,Sylvant,Janssen Biotech,4/23/2014,intravenous,chimeric,IL6,Multicentric Castleman's disease
+tocilizumab,Actemra,Genentech,1/8/2010,intravenous,humanized,IL6R,Rheumatoid arthritis
+tocilizumab,Actemra,Genentech,10/21/2013,intravenous subcutaneous,humanized,IL6R,Rheumatoid arthritis
+trastuzumab,Herceptin,Genentech,9/25/1998,intravenous,humanized,HER2,Metastatic breast cancer
+ustekinumab,Stelara,Centocor,9/25/2009,subcutaneous,fully human,IL12 IL23,
+vedolizumab,Entyvio,Takeda,5/20/2014,intravenous,humanized,integrin receptor,Ulcerative colitis
+sarilumab,Kevzara,Sanofi Aventis,5/22/2017,subcutaneous,fully human,IL6R,Rheumatoid arthritis
+rituximab and hyaluronidase,Rituxan Hycela,Genentech,6/22/2017,subcutaneous,"chimeric, co-formulated",CD20,Follicular lymphoma
+guselkumab,Tremfya,Janssen Biotech,7/13/2017,subcutaneous,fully human,IL23,Plaque psoriasis
+inotuzumab ozogamicin,Besponsa,Wyeth,8/17/2017,intravenous,"humanized, antibody-drug conjugate",CD22,Precursor B-cell acute lymphoblastic leukemia
+adalimumab-adbm,Cyltezo,Boehringer Ingelheim,8/25/2017,subcutaneous,"fully human, biosimilar",TNF,Rheumatoid arthritis
+gemtuzumab ozogamicin,Mylotarg,Wyeth,9/1/2017,intravenous,"humanized, antibody-drug conjugate",CD33,Acute myeloid leukemia
+bevacizumab-awwb,Mvasi,Amgen,9/14/2017,intravenous,"humanized, biosimilar",VEGF,Metastatic colorectal cancer
+benralizumab,Fasenra,AstraZeneca,11/14/2017,subcutaneous,humanized,interleukin-5 receptor alpha subunit,"Severe asthma, eosinophilic phenotype"
+emicizumab-kxwh,Hemlibra,Genentech,11/16/2017,subcutaneous,"humanized, bispecific","Factor IXa, Factor X",Hemophilia A (congenital Factor VIII deficiency) with Factor VIII inhibitors.
+trastuzumab-dkst,Ogivri,Mylan,12/1/2017,intravenous,"humanized, biosimilar",HER2,"HER2-overexpressing breast cancer, metaststic gastric or gastroesophageal junction adenocarcinoma"
+infliximab-qbtx,Ixifi,Pfizer,12/13/2017,intravenous,"chimeric, biosimilar",TNF,Crohn's disease
+ibalizumab-uiyk,Trogarzo,TaiMed Biologics,3/6/2018,intravenous,humanized,CD4,HIV
+tildrakizumab-asmn,Ilumya,Merck,3/20/2018,subcutaneous,humanized,IL23,Plaque psoriasis
+burosumab-twza,Crysvita,Ultragenyx,4/17/2018,subcutaneous,fully human,FGF23,X-linked hypophosphatemia
+erenumab-aooe,Aimovig,Amgen,5/17/2018,subcutaneous,fully human,CGRP receptor,Migraine headache prevention
