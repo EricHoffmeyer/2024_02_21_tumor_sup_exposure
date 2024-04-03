@@ -1,0 +1,77 @@
+---
+title: "2024_04_03_drug_antibody_targets"
+format: html
+editor: visual
+---
+
+Trying some new methods to discover targets for drug and antibody treatment among the upregulated genes shared by both HOS and OS17 exposed to tumor supernatant.
+
+# Libraries
+
+```{r}
+suppressPackageStartupMessages({
+library(tidyverse)
+library(readr)
+})
+```
+
+# Set up directories
+
+```{r}
+result.dir <- "2024_04_03_results/"
+
+if(!exists(result.dir)){
+  dir.create(result.dir)
+}
+```
+
+# Read in data
+
+```{r}
+drug.df <- read_delim("data/repurposing.drug.data.txt", 
+    delim = "\t", escape_double = FALSE, 
+    trim_ws = TRUE) |> 
+  drop_na(Target)
+
+ab.df <- read_csv("data/fda.approved.antibodies.csv")
+
+gene.df <- read_csv("2024_03_08_results/HOS_OS17_shared_DE_genes.csv")
+```
+
+Starting with the drug dataframe, because the gene target names seem consistent with our results. The antibody Target column may need additional formatting.
+
+First, some drugs have multiple targets. I need to split those up into separate columns.
+
+```{r}
+drug.df |> 
+  separate_longer_delim(Target, delim = ",")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
