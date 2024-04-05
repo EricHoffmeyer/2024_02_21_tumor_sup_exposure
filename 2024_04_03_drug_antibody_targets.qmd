@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-Trying some new methods to discover targets for drug and antibody treatment among the upregulated genes shared by both HOS and OS17 exposed to tumor supernatant.
+Trying some new methods to discover targets for treatment using bulk RNAseq results. In this notebook I will look at the the differentially expressed genes shared by both HOS and OS17 exposed to CAR T cell supernatant.
 
 # Libraries
 
@@ -27,33 +27,77 @@ if(!exists(result.dir)){
 
 # Read in data
 
+In excel, I took HOS_OS17_shared_DE_genes.csv from `2024_03_08_results` and ranked (by padj) the genes for each tumor cell line. For genes where p = 0, I gave an equivalent rank of 1. I then added the ranks for each cell line into a rank_sum column and arranged by rank_sum from smallest to largest. Then I made a gene_rank column based on rank_sum.
+
+This file was saved as HOS_OS17_shared_DE_genes_ranked.csv in the data folder.
+
 ```{r}
 drug.df <- read_delim("data/repurposing.drug.data.txt", 
-    delim = "\t", escape_double = FALSE, 
-    trim_ws = TRUE) |> 
+                      delim = "\t", 
+                      escape_double = FALSE, 
+                      trim_ws = TRUE) |> 
   drop_na(Target)
 
 ab.df <- read_csv("data/fda.approved.antibodies.csv")
 
-gene.df <- read_csv("2024_03_08_results/HOS_OS17_shared_DE_genes.csv")
+gene.df <- read_csv("data/HOS_OS17_shared_DE_genes_ranked.csv") |> 
+  select(gene_symbol, gene_rank, gene_desc, hos_log2FC, hos_padj, os17_log2FC, os17_padj) # select only relevant columns
+
+transmembrane.df <- read_delim("data/plasma.membrane.GO0005886.txt", 
+                               delim = "\t", 
+                               col_names = F,
+                               escape_double = FALSE, 
+                               trim_ws = TRUE) |> 
+  select(!c(4,6,10,13))
+
+colnames(transmembrane.df) <- c("gene_label", "bioentity", "bioentity_name", "annotation_class", "assigned_by", "taxon", "evidence_type", "panther_family", "type", "reference", "date", "organism")
 ```
+
+# Drug targets
 
 Starting with the drug dataframe, because the gene target names seem consistent with our results. The antibody Target column may need additional formatting.
 
 First, some drugs have multiple targets. I need to split those up into separate columns.
 
 ```{r}
-drug.df |> 
-  separate_longer_delim(Target, delim = ",")
+drug.df <- drug.df |> 
+  separate_longer_delim(Target, delim = ", ")
+```
+
+Use `inner_join` to keep common values between the gene.df and the drug.df in a new target.df
+
+```{r}
+gene.drug.df <- gene.df |> 
+  inner_join(drug.df, by = c("gene_symbol" = "Target")) |> 
+  arrange(gene_rank)
+
+write.csv(gene.drug.df, file = paste0(result.dir, "drug.targets.csv"))
 ```
 
 
+# Transmembrane protein targets
+
+Remove the duplicate values from the gene_label column.
+
+```{r}
+transmembrane.df <- transmembrane.df[!duplicated(transmembrane.df[, "gene_label"]),]
+```
 
 
+```{r}
+gene.transmembrane.df <- gene.df |> 
+  inner_join(transmembrane.df, by = c("gene_symbol" = "gene_label")) |> 
+  select(c(1:7))
 
+write.csv(gene.transmembrane.df, file = paste0(result.dir, "transmembrane.targets.csv"))
+```
 
+# Antibody targets
 
-
+```{r}
+gene.ab.df <- gene.df |> 
+  inner_join(ab.df, by = c("gene_symbol" = "Target"))
+```
 
 
 
