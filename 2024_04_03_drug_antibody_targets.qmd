@@ -23,8 +23,6 @@ result.dir <- "2024_04_03_results/"
 if(!exists(result.dir)){
   dir.create(result.dir)
 }
-
-read_delim(file = )
 ```
 
 # Read in data
@@ -81,7 +79,6 @@ write.csv(gene.drug.df, file = paste0(result.dir, "drug.targets.csv"),
           row.names = F) 
 ```
 
-
 # Transmembrane protein targets
 
 Remove the duplicate values from the gene_label column.
@@ -111,17 +108,52 @@ gene.ab.df <- gene.df |>
 
 Did not see any matches here so I will stop for now.
 
+# TK receptor lookup
 
+Joselyn and Patrick are interested in membrane tyrosine kinase receptors, so they asked me to look for a small list of genes in the CAR supernatant vs control data.
 
+```{r}
+gene.df <- read.csv(file = '2024_03_08_results/HOS_OS17_shared_DE_genes.csv',
+                    row.names = NULL)
 
+?read.csv
+```
 
+```{r}
+tk.receptors <- data.frame(tk.receptors = c("VEGFR2", "MET", "KIT", "RET", "AXL", "FLT3", "TIE2", "MER", "Tyro3"))
+```
 
+```{r}
+tk.df <- inner_join(tk.receptors, gene.df, by = c("tk.receptors" = "gene_symbol"))
 
+write.csv(tk.df, file = "tk.receptor.csv")
+```
 
+# Cytokine data
+
+Mike gave me a list of cytokine genes to look up
+
+```{r}
+cytokine.df <- read_csv("data/cytokines.txt",
+                        col_names = F)|> 
+  separate_wider_delim(cols = X1, 
+                       delim ="(",
+                       names = c("name", "gene_id"))
+
+cytokine.df$gene_id <- str_remove(cytokine.df$gene_id, "[)]")
+```
 
 
 ```{r}
-sessionInfo()
+cyto.gene.df <- cytokine.df |> 
+  inner_join(gene.df, by = c("gene_id" = "gene_symbol"))
+
+write.csv(cyto.gene.df, file = paste0(result.dir, "cytokines.csv"))
+
+```
+
+```{r}
+
 ```
 
 
@@ -136,3 +168,9 @@ sessionInfo()
 
 
 
+
+
+
+```{r}
+sessionInfo()
+```

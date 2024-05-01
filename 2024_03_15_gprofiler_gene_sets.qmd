@@ -51,24 +51,8 @@ enrich <- gost(temp,
 ```
 
 
-------------
 
-```{r}
-gene.df <- read.csv(file = '2024_03_08_results/HOS_OS17_shared_DE_genes.csv',
-                    row.names = NULL)
 
-?read.csv
-```
-
-```{r}
-tk.receptors <- data.frame(tk.receptors = c("VEGFR2", "MET", "KIT", "RET", "AXL", "FLT3", "TIE2", "MER", "Tyro3"))
-```
-
-```{r}
-tk.df <- inner_join(tk.receptors, gene.df, by = c("tk.receptors" = "gene_symbol"))
-
-write.csv(tk.df, file = "tk.receptor.csv")
-```
 
 
 
