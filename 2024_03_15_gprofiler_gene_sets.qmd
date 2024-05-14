@@ -35,14 +35,16 @@ gene.vector <- read.csv(file = '2024_03_08_results/HOS_OS17_shared_DE_genes.csv'
   # dplyr::filter(hos_padj < 0.000001 & os17_padj <0.000001) |> 
   # dplyr::select(gene_symbol) 
 
-temp <- gene.vector$gene_symbol
+vector <- as.vector(gene.vector$gene_symbol)
+
+test.vector <- vector[1:1000]
 ```
 
 
 Gene set enrichment
 
 ```{r}
-enrich <- gost(temp,
+enrich <- gost(test.vector,
                organism = "hsapiens",
                ordered_query = T,
                evcodes = T,
