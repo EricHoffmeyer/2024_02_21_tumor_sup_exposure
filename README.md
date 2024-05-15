@@ -13,3 +13,7 @@ Contains plots generated from the DESeq comparisons and .Rdata GeneTonic objects
 ## 2024_03_15_gprofiler_gene_sets
 
 Contins results from expanded gene set analysis using the gprofiler package.
+
+## 2024_04_03_results
+
+Results from 2024_04_03_drug_antibody_targets where I match the list of shared DE genes against drug/gene list, list of transmembrane proteins (for potential CAR T cell targets), etc.
