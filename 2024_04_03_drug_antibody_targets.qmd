@@ -152,9 +152,165 @@ write.csv(cyto.gene.df, file = paste0(result.dir, "cytokines.csv"))
 
 ```
 
-```{r}
+# 2024_05_24 Update
 
+We tried some methotraxate ("MTX") dosing and wanted to look at genes associated with MTX.
+
+```{r}
+mtx.df <- read.csv(file = "data/MTX.sensitivity.genes.csv")
 ```
+
+```{r}
+mtx.related.df <- inner_join(mtx.df, gene.df, by = c("Gene" = "gene_symbol"))
+```
+
+
+```{r}
+os.df <- read.csv(file = "2024_03_07_results/deseq_results/OS_17_CAR_sup.vs.OS_17_Media.csv")
+hos.df <- read.csv(file = "2024_03_07_results/deseq_results/HOS_CAR_sup.vs.HOS_Media.csv")
+
+os.mtx.df <- inner_join(mtx.df, os.df, by = c("Gene" = "gene_symbol"))
+hos.mtx.df<- inner_join(mtx.df, hos.df, by = c("Gene" = "gene_symbol"))
+```
+
+Write out results
+
+```{r}
+write.csv(mtx.related.df, file = paste0(result.dir, "mtx.shared.sig.genes.csv"))
+
+write.csv(os.mtx.df, file = paste0(result.dir, "mtx.os17.ALL.genes.csv"))
+
+write.csv(hos.mtx.df, file = paste0(result.dir, "mtx.hos.ALL.genes.csv"))
+```
+
+
+## Heatmaps
+
+Mike wants to see heatmaps of these genes, in multiple categories.
+
+Load pheatmap library
+
+```{r}
+library(pheatmap)
+```
+
+### OS17 MTX gene heatmaps
+
+Starting with OS17. Removing all the character columns to create counts only matrix.
+
+```{r}
+os.mtx.matrix <- os.mtx.df |> 
+  na.omit() |> 
+  column_to_rownames(var = "Gene") |> 
+  dplyr::select(contains("OS"))
+```
+
+Calling the columns names to help build my annotation variables
+
+```{r}
+colnames(os.mtx.matrix)
+```
+
+Create annotation variables
+
+```{r}
+os.media.samples <- c("OS_17_Media_1_S21_L001", "OS_17_Media_2_S22_L001")
+
+os_anno <- data.frame(sample_name = colnames(os.mtx.matrix)) |> 
+  mutate(condition = if_else(sample_name %in% os.media.samples, "Media", "CAR sup")) |> 
+  column_to_rownames("sample_name")
+
+row_anno <- mtx.df |> 
+  select(!Description) |> 
+  tibble::column_to_rownames("Gene") 
+
+os.colors <- c("#FFCC00", "blue")
+names(os.colors) <- c("CAR sup", "Media")
+os.anno.colors <- list(condition = os.colors)
+```
+
+Heatmap of all the genes
+
+```{r}
+pheatmap(os.mtx.matrix, 
+         scale = "row",
+         cluster_rows = F,
+         fontsize = 12,
+         fontsize_row = 15,
+         show_colnames = FALSE,
+         treeheight_col = 0,
+         annotation = os_anno,
+         annotation_row = row_anno,
+         annotation_colors = os.anno.colors,
+         main = "OS17 MTX-related genes",
+         filename = paste0(result.dir, "OS17.MTX.Genes.Heatmap.png"))
+```
+
+```{r}
+row_anno <- mtx.df |> 
+  select(!Description) |> 
+  tibble::column_to_rownames("Gene")
+```
+
+### HOS MTX heatmap
+
+Repeating process for HOS genes
+
+```{r}
+hos.mtx.matrix <- hos.mtx.df |> 
+  na.omit() |> 
+  column_to_rownames(var = "Gene") |> 
+  dplyr::select(contains("HOS"))
+```
+
+```{r}
+colnames(hos.mtx.matrix)
+```
+
+Annotation
+
+```{r}
+hos.media.samples <- c("HOS_Media_1_S10_L001", "HOS_Media_2_S11_L001")
+
+hos_anno <- data.frame(sample_name = colnames(hos.mtx.matrix)) |> 
+  mutate(condition = if_else(sample_name %in% hos.media.samples, "Media", "CAR sup")) |> 
+  column_to_rownames("sample_name")
+
+# I can use same row_anno df
+# row_anno <- mtx.df |> 
+#   select(!Description) |> 
+#   tibble::column_to_rownames("Gene") 
+
+# Reusing these colors, just calling the "os" variables
+# hos.colors <- c("#FFCC00", "blue")
+# names(hos.colors) <- c("CAR sup", "Media")
+# hos.anno.colors <- list(condition = os.colors)
+```
+
+```{r}
+pheatmap(hos.mtx.matrix, 
+         scale = "row",
+         cluster_rows = F,
+         fontsize = 12,
+         fontsize_row = 15,
+         show_colnames = FALSE,
+         treeheight_col = 0,
+         annotation = hos_anno,
+         annotation_row = row_anno,
+         annotation_colors = os.anno.colors,
+         main = "HOS MTX-related genes",
+         filename = paste0(result.dir, "HOS.MTX.Genes.Heatmap.png"))
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
